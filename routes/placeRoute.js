@@ -1,10 +1,16 @@
 const express=require("express");
 const router=express.Router();
 const multer  = require('multer')
-const upload = multer({ dest: 'uploads/place/' })
-const{createPlace,uploadImage,reasizeImage}=require("../services/placeService")
+
+
+const {protect}=require("../services/authService")
+const{createPlace,uploadImage,reasizeImage,getSpecificPlace,getAllPlace,DeletePlace,updatePlace}=require("../services/placeService")
 
 router.route("/").post(uploadImage,reasizeImage,createPlace)
+.get(protect,getAllPlace)
+router.route("/:id").get(getSpecificPlace)
+.put(uploadImage,reasizeImage,updatePlace)
+.delete(DeletePlace)
 
 
 module.exports=router;

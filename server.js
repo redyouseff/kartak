@@ -15,7 +15,7 @@ app.use(express.json())
 app.use(express.static(path.join(__dirname,"uploads")))
 // app.use(bodyParser.urlencoded({ extended: false }))
 
-app.listen(process.env.PORT,()=>{
+const server= app.listen(process.env.PORT,()=>{
     console.log(`app listen on port ${process.env.PORT}`)
   
 }
@@ -34,7 +34,7 @@ app.use(globelError)
 //global error handling expable "database connection "
 process.on("unhandledRejection",(err)=>{
     console.log(`unhandledRejection error :${err}`)
-    Server.close(()=>{
+    server.close(()=>{
         console.error("shutting down the server")
         process.exit(1);
     })
