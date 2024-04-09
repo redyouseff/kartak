@@ -3,6 +3,7 @@ const userModel = require("../model/userModel");
 const bcrypt = require("bcrypt");
 const appError = require("../utils/dummy/apiError");
 const { use } = require("../routes/userRoute");
+const jwt = require("jsonwebtoken");
 const createToken = require("../utils/dummy/jwtFunction");
 
 const login = asyncHandler(async (req, res, next) => {
@@ -15,6 +16,7 @@ const login = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({ status: "success", Data: user, token: token });
 });
+
 const protect = asyncHandler(async (req, res, next) => {
   let token;
 
@@ -36,12 +38,10 @@ const protect = asyncHandler(async (req, res, next) => {
   }
 
   req.currentUser = currentUser;
-
   next();
 });
 
 module.exports = {
   login,
   protect,
-  
 };

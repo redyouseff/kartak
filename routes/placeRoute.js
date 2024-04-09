@@ -1,10 +1,9 @@
 const express=require("express");
 const router=express.Router();
-const multer  = require('multer')
-
 
 const {protect}=require("../services/authService")
 const{createPlace,uploadImage,reasizeImage,getSpecificPlace,getAllPlace,DeletePlace,updatePlace}=require("../services/placeService")
+// console.log("protectFuncAt placeRoute.js",protect);
 
 router.route("/").post(uploadImage,reasizeImage,createPlace)
 .get(protect,getAllPlace)
