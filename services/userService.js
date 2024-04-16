@@ -68,7 +68,7 @@ const createUser = asyncHandler(async (req, res, next) => {
   const token = createToken(user._id);
 
   res.status(200).json({ status: "success", Data: user, token });
-  fs.unlinkSync(imagePath)
+  // fs.unlinkSync(imagePath)
 });
 ///////////////////////////
 const getSpecificUser = asyncHandler(async (req, res, next) => {
