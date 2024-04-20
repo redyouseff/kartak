@@ -2,6 +2,7 @@ const { string } = require("i/lib/util")
 const mongoose = require("mongoose")
 const bcrypt = require("bcrypt")
 const crypto = require("crypto")
+const { type } = require("os")
 const userSchema = mongoose.Schema({
     name: {
         type: String,
@@ -33,6 +34,11 @@ const userSchema = mongoose.Schema({
         required: [true, "password is required"],
         minLength: [5, "too short password"]
 
+    },confirmPassword:{
+        type:String,
+        required:['Confirm your Password']
+        
+    
     },
     role: {
         type: String,
@@ -69,6 +75,7 @@ userSchema.pre("save", async function (next) {
         next();
     }
     this.password = await bcrypt.hash(this.password, parseInt(process.env.BECRYPT))
+    this.confirmPassword=await bcrypt.hash(this.confirmPassword, parseInt(process.env.BECRYPT))
 })
 
 // ? (marwan elmehy وربنا يستر ) **************************************************
