@@ -88,7 +88,7 @@ const forgetPassword = asyncHandler(async (req, res, next) => {
 });
 const resetPassword = asyncHandler(async (req, res, next) => {
   // console.log("params=>",req.params.token);
-  console.log("req.body",req.body);
+  console.log("req.body", req.body);
 
   const token = crypto
     .createHash("sha256")
@@ -110,9 +110,10 @@ const resetPassword = asyncHandler(async (req, res, next) => {
     user.passwordResetTokenExpired = undefined;
     user.passwordChangeAt = Date.now();
     await user.save();
-  }else{
-    return next(new appError("Passeword not the same of confirmPassword ", 500));
-
+  } else {
+    return next(
+      new appError("Passeword not the same of confirmPassword ", 500)
+    );
   }
 
   const tokenLogin = createToken(user._id);
@@ -123,36 +124,52 @@ const resetPassword = asyncHandler(async (req, res, next) => {
     },
   });
 });
-const updatePassword =asyncHandler(async(req,res,next)=>{
-  console.log("req.currentUser._id",req.currentUser._id);
-  const user = await userModel.findById(req.currentUser._id)
+const updatePassword = asyncHandler(async (req, res, next) => {
+  console.log("req.currentUser._id", req.currentUser._id);
+  const user = await userModel.findById(req.currentUser._id);
   //check the old password
-  if (!(await bcrypt.compare(req.body.currentPassword,user.password))){
-    return next(new appError("the currentPassword is incorrect",400))
+  if (!(await bcrypt.compare(req.body.currentPassword, user.password))) {
+    return next(new appError("the currentPassword is incorrect", 400));
   }
   //check new Password
-   if (req.body.newPassword === req.body.confirmPassword){
-    user.password=req.body.newPassword
-    user.confirmPassword=req.body.confirmPassword
-    await user.save()
-   }else{
-    return next(new appError('New Passeord and Confirm Passeord are different',400))
-   }
-   //return response with new token
-   const tokenLogin = createToken(user._id)
+  if (req.body.newPassword === req.body.confirmPassword) {
+    user.password = req.body.newPassword;
+    user.confirmPassword = req.body.confirmPassword;
+    await user.save();
+  } else {
+    return next(
+      new appError("New Passeord and Confirm Passeord are different", 400)
+    );
+  }
+  //return response with new token
+  const tokenLogin = createToken(user._id);
 
-   res.status(200).json({
+  res.status(200).json({
     status: "success",
     data: {
       token: tokenLogin,
     },
-   })
+  });
+});
 
-})
+const currentUser = asyncHandler(async (req, res, next) => {
+  console.log("req.currentUser._id", req.currentUser._id);
+  const user = await userModel
+    .findById(req.currentUser._id)
+    .select("-password -confirmPassword -active");
+  console.log("user", user);
+
+  res.status(201).json({
+    status: "success",
+    data: { userData: user },
+  });
+});
+
 module.exports = {
   login,
   protect,
   forgetPassword,
   resetPassword,
   updatePassword,
+  currentUser,
 };
