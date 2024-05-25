@@ -1,3 +1,4 @@
+const { string } = require("i/lib/util");
 const mongoose=require("mongoose");
 const placeSchema=mongoose.Schema({
     name:{
@@ -45,6 +46,16 @@ const placeSchema=mongoose.Schema({
             publicId:null,
         }
     },
+    owner:{
+        type:String,
+        required:["true","owner name is required"]
+    },
+    code:{
+        type:String,
+        required:["true","code is reqired"]
+
+    }
+ 
 
 
 },{timestamps:true})

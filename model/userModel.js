@@ -48,6 +48,8 @@ const userSchema=mongoose.Schema({
     passwordResetCode:String,
     passwordResetExpires:String,
     passwordResetVerified:String,
+    date:Date,
+    
 
 
 
@@ -61,5 +63,21 @@ userSchema.pre("save",async function(next){
     this.password=await bcrypt.hash(this.password,parseInt(process.env.BECRYPT))
 })
 
+
 const userModel=mongoose.model("user",userSchema)
 module.exports=userModel
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

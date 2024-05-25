@@ -3,7 +3,9 @@ const router=express.Router();
 
  const { login}=require("../services/authService")
 
- router.route("/").get(login)
+ router.route("/").post(login)
+ 
+ 
     
  
  module.exports=router;

@@ -12,6 +12,7 @@ const bodyParser = require('body-parser')
 dotenv.config({path:"config.env"})
 app.use(express.json())
 
+
 app.use(express.static(path.join(__dirname,"uploads")))
 // app.use(bodyParser.urlencoded({ extended: false }))
 
