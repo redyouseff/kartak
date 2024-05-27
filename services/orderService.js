@@ -84,8 +84,7 @@ const checkoutSession=asyncHandler(async(req,res,next)=>{
         ],
 
         mode: 'payment',
-        code:req.body.coe,
-        owner:req.body.owner,
+        client_reference_id:req.body.code,
         success_url: `${req.protocol}://${req.get("host")}/api/place`,
         cancel_url: `${req.protocol}://${req.get("host")}/api/order`,
     })
@@ -119,9 +118,9 @@ const webhookChecout=asyncHandler(async(req,res,next)=>{
 })
 
 const createCardOrder=async(session)=>{
-const code=session.code
-const  owner =session.owner
-console.log(code,owner)
+const code=session.client_reference_id
+console.log(code)
+
 }
 
 module.exports={
