@@ -12,11 +12,14 @@ const bodyParser = require('body-parser')
 const  cors = require('cors')
 const  compression = require('compression')
 const {webhookChecout}=require("./services/orderService")
-dotenv.config({path:"config.env"})
-app.use(express.json())
+
 
 
 app.post("/webhookCheckout",express.raw({type: 'application/json'}),webhookChecout)
+
+
+dotenv.config({path:"config.env"})
+app.use(express.json())
 
 //allow any device to use url 
 app.use(cors())
