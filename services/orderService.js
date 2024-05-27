@@ -84,6 +84,8 @@ const checkoutSession=asyncHandler(async(req,res,next)=>{
         ],
 
         mode: 'payment',
+        code:req.body.coe,
+        owner:req.body.owner,
         success_url: `${req.protocol}://${req.get("host")}/api/place`,
         cancel_url: `${req.protocol}://${req.get("host")}/api/order`,
     })
@@ -91,11 +93,10 @@ const checkoutSession=asyncHandler(async(req,res,next)=>{
 })
 
 const webhookChecout=asyncHandler(async(req,res,next)=>{
-    console.log("in webhook ....")
-    console.log(process.env.STRIPE_WEBHOOK_SECRET)
+    
 
     const sig = req.headers['stripe-signature'];
-    console.log(sig)
+  
 
     let event;
   
@@ -111,9 +112,17 @@ const webhookChecout=asyncHandler(async(req,res,next)=>{
     if(event.type =="checkout.session.completed"){
 
         console.log("create order her ..........")
+
+        createCardOrder(event.data.object)
+
     }
 })
 
+const createCardOrder=async(session)=>{
+const code=session.code
+const  owner =session.owner
+console.log(code,owner)
+}
 
 module.exports={
      createOrder,
