@@ -143,7 +143,8 @@ const  order= await orderModel.create({
     totalPrice:totalPrice,
     totalPriceAfterDiscount:totalPriceAfterDiscount,
     owner:place.owner,
-    cashBack:cashBack
+    cashBack:cashBack,
+    paymentTypeMethod:"card"
 
 })
 
