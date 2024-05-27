@@ -103,8 +103,8 @@ const webhookChecout=asyncHandler(async(req,res,next)=>{
      return response.status(400).send(`Webhook Error: ${err.message}`);
    
     }
-    
-    if(event=="checkout.session.completed"){
+
+    if(event.type =="checkout.session.completed"){
 
         console.log("create order her ..........")
     }
