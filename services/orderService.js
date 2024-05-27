@@ -91,6 +91,9 @@ const checkoutSession=asyncHandler(async(req,res,next)=>{
 })
 
 const webhookChecout=asyncHandler(async(req,res,next)=>{
+    console.log("in webhook ....")
+    console.log(process.env.STRIPE_WEBHOOK_SECRET)
+
     const sig = request.headers['stripe-signature'];
 
     let event;
