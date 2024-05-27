@@ -95,6 +95,8 @@ const webhookChecout=asyncHandler(async(req,res,next)=>{
     console.log(process.env.STRIPE_WEBHOOK_SECRET)
 
     const sig = req.headers['stripe-signature'];
+    
+    console.log(sig)
 
     let event;
   
