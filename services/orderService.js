@@ -95,13 +95,12 @@ const webhookChecout=asyncHandler(async(req,res,next)=>{
     console.log(process.env.STRIPE_WEBHOOK_SECRET)
 
     const sig = req.headers['stripe-signature'];
-    
     console.log(sig)
 
     let event;
   
     try {
-      event = stripe.webhooks.constructEvent(req.body, sig,"whsec_2RFE52qXrGB3kOMqblULiHecrXu3zcXe");
+      event = stripe.webhooks.constructEvent(req.body, sig,`${process.env.STRIPE_WEBHOOK_SECRET}`);
 
     } catch (err) {
         console.log("error ")
