@@ -125,8 +125,8 @@ const createCardOrder=async(session)=>{
 const code= session.client_reference_id
 const userEmail=session.customer_email
 const totalPrice=session.amount_total / 100
-const place =await placeModel.find({code:code})
-const user=await userModel.find({email:userEmail})
+const place =await placeModel.findOne({code:code})
+const user=await userModel.findOne({email:userEmail})
 
 const  totalPriceAfterDiscount = 200-((totalPrice * place.discount) / 100)
 const cashBack=((totalPrice * place.discount) / 100)
