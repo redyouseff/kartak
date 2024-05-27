@@ -124,7 +124,7 @@ const webhookChecout=asyncHandler(async(req,res,next)=>{
 const createCardOrder=async(session)=>{
 const code= session.client_reference_id
 const userEmail=session.customer_email
-const totalPrice= session.amount_total /100
+const totalPrice=session.amount_total / 100
 const place =await placeModel.find({code:code})
 const user=await userModel.find({email:userEmail})
 
