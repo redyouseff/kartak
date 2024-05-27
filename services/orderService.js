@@ -125,12 +125,15 @@ const createCardOrder=async(session)=>{
 const code= session.client_reference_id
 const userEmail=session.customer_email
 const totalPrice=session.amount_total /100
-console.log(code,userEmail,totalPrice)
 const place =await placeModel.find({code:code})
 const user=await userModel.find({email:userEmail})
 
 const  totalPriceAfterDiscount = 200-((totalPrice * place.discount) / 100)
 const cashBack=((totalPrice * place.discount) / 100)
+
+console.log(totalPriceAfterDiscount,cashBack)
+console.log(typeof(totalPriceAfterDiscount,typeof(cashBack)))
+console.log(place,user)
 
 const  order= await orderModel.create({
     user:user._id,
@@ -148,10 +151,12 @@ const  order= await orderModel.create({
 }
 
 module.exports={
+
      createOrder,
      getAllOrder,
      getSpecificOrder,
      getLoggedUserOrder,
      checkoutSession,
      webhookChecout
+
 }
