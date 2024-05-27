@@ -15,7 +15,7 @@ const {webhookChecout}=require("./services/orderService")
 dotenv.config({path:"config.env"})
 app.use(express.json())
 
-app.use("/webhookCheckout",express.raw({type:'application/json'}),webhookChecout)
+app.post("/webhookCheckout",express.raw({type:'application/json'}),webhookChecout)
 
 //allow any device to use url 
 app.use(cors())
