@@ -99,7 +99,7 @@ const webhookChecout=asyncHandler(async(req,res,next)=>{
     let event;
   
     try {
-      event = stripe.webhooks.constructEvent(request.body, sig,`${ process.env.STRIPE_WEBHOOK_SECRET}`);
+      event = stripe.webhooks.constructEvent(request.body, sig,"whsec_2RFE52qXrGB3kOMqblULiHecrXu3zcXe");
 
     } catch (err) {
         console.log("error ")
