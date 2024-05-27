@@ -31,10 +31,10 @@ const orderSchema=mongoose.Schema({
     owner:{
         type:String,
         required:[true,"owner is reqired"]
-    }
+    },
     
-
-
+    cashBack:Number
+    
 
 },{timestamps:true})
 

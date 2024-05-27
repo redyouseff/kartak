@@ -5,6 +5,7 @@ const asyncHandler = require("express-async-handler");
 const { model } = require("mongoose");
 const { configDotenv } = require("dotenv");
 const { nextTick } = require("process");
+const userModel = require("../model/userModel");
 const stripe = require('stripe')('sk_test_51PKm4rH0IrZrduSRAqVe8SaShF2l66K82UTdapW660S9KpJiiqZygJmHgUvZhf4VMxQeTl5mIDgoZ8a1GE7wXGQj009W4TlcCz');
 
 
@@ -16,13 +17,15 @@ const createOrder=asyncHandler(async(req,res,next)=>{
     const {code,totalPrice,owner}=req.body
     if(place && owner==place.owner){
         const  totalPriceAfterDiscount = 200-((totalPrice * place.discount) / 100)
+        const cashBack=((totalPrice * place.discount) / 100)
         const order= await orderModel.create({
             user:req.currentUser._id,
             place:place._id,
             paidAt:Date.now(),
             totalPrice:totalPrice,
             totalPriceAfterDiscount:totalPriceAfterDiscount,
-            owner:owner
+            owner:owner,
+            cashBack:cashBack
             
         })
        
@@ -85,6 +88,7 @@ const checkoutSession=asyncHandler(async(req,res,next)=>{
 
         mode: 'payment',
         client_reference_id:req.body.code,
+        customer_email: req.currentUser.email,
         success_url: `${req.protocol}://${req.get("host")}/api/place`,
         cancel_url: `${req.protocol}://${req.get("host")}/api/order`,
     })
@@ -118,8 +122,28 @@ const webhookChecout=asyncHandler(async(req,res,next)=>{
 })
 
 const createCardOrder=async(session)=>{
-const code=session.client_reference_id
-console.log(code)
+const code= session.client_reference_id
+const userEmail=session.customer_email
+const totalPrice=session.amount_total /100
+console.log(code,userEmail,totalPrice)
+const place =await placeModel.find({code:code})
+const user=await userModel.find({email:userEmail})
+
+const  totalPriceAfterDiscount = 200-((totalPrice * place.discount) / 100)
+const cashBack=((totalPrice * place.discount) / 100)
+
+const  order= await orderModel.create({
+    user:user._id,
+    place:place._id,
+    paidAt:Date.now(),
+    totalPrice:totalPrice,
+    totalPriceAfterDiscount:totalPriceAfterDiscount,
+    owner:place.owner,
+    cashBack:cashBack
+
+})
+
+
 
 }
 
