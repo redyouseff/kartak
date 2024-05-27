@@ -131,8 +131,8 @@ const user=await userModel.find({email:userEmail})
 const  totalPriceAfterDiscount = 200-((totalPrice * place.discount) / 100)
 const cashBack=((totalPrice * place.discount) / 100)
 
-console.log(totalPriceAfterDiscount,cashBack)
-console.log(typeof(totalPriceAfterDiscount,typeof(cashBack)))
+console.log(totalPriceAfterDiscount,"ffff",cashBack)
+console.log(typeof(totalPriceAfterDiscount),"fffff",typeof(cashBack))
 console.log(place,user)
 
 const  order= await orderModel.create({
