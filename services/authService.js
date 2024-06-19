@@ -42,50 +42,92 @@ const protect = asyncHandler(async (req, res, next) => {
   req.currentUser = currentUser;
   next();
 });
-const forgetPassword = asyncHandler(async (req, res, next) => {
-  // ! 1-get the user from mongodb database (comment)
+// const forgetPassword = asyncHandler(async (req, res, next) => {
+//   // ! 1-get the user from mongodb database (comment)
 
-  const user = await userModel.findOne({ email: req.body.email });
-  console.log("user=>", user);
-  if (!user) {
-    const error = new appError(
-      "we con not find the user with the given email",
-      404
-    );
-    next(error);
-    // ?  return next(new appError("no users on this email")) (try this comment)
+//   const user = await userModel.findOne({ email: req.body.email });
+//   console.log("user=>", user);
+//   if (!user) {
+//     const error = new appError(
+//       "we con not find the user with the given email",
+//       404
+//     );
+//     next(error);
+//     // ?  return next(new appError("no users on this email")) (try this comment)
+//   }
+
+//   // ! 2-generate rondom reset token (comment)
+
+//   const resetToken = user.createResetPasswordToken();
+//   console.log("reset token :" + resetToken);
+//   await user.save();
+
+//   // ! 3-send email to the user with the rondom token (comment)
+
+//   const resetUrl = `${req.protocol}://${req.get(
+//     "host"
+//   )}/api/auth/resetPassword/${resetToken}`;
+//   const message = `we have recieve password reset req ,use the below link\n\n${resetUrl}`;
+//   try {
+//     await sendEmail({
+//       email: user.email,
+//       subject: "password change req ",
+//       message: message,
+//     });
+//     console.log("send email : ", sendEmail);
+//     res.status(200).json({
+//       status: "success",
+//       message: "password reset link send to the user",
+//     });
+//   } catch (err) {
+//     user.passwordResetToken = undefined;
+//     user.passwordResetExpires = undefined;
+//     user.save();
+//     return next(new appError("there is an error in sending an email", 500));
+//   }
+// });
+const forgetPassword=asyncHandler(async(req,res,next)=>{
+  const user =await userModel.findOne({email: req.body.email})
+ 
+  if(!user){
+      return next (new appError(`email not found${req.body.email}`,404))
+
   }
+  const resetCoder=Math.floor(Math.random() * 899999 + 100000).toString();
 
-  // ! 2-generate rondom reset token (comment)
 
-  const resetToken = user.createResetPasswordToken();
-  console.log("reset token :" + resetToken);
-  await user.save();
+  const  hashCode =await crypto
+  .createHash('md5')
+  .update(resetCoder)
+  .digest('hex');
+   user.passwordResetCode=hashCode
+   user.passwordResetExpires=Date.now() + 10 * 60 * 1000
+   user.passwordResetVerified=false
 
-  // ! 3-send email to the user with the rondom token (comment)
+   user.save();
+   const message=`hi ${user.name} 
+   you recieve resetcode
+    ${resetCoder}`
 
-  const resetUrl = `${req.protocol}://${req.get(
-    "host"
-  )}/api/auth/resetPassword/${resetToken}`;
-  const message = `we have recieve password reset req ,use the below link\n\n${resetUrl}`;
-  try {
-    await sendEmail({
-      email: user.email,
-      subject: "password change req ",
-      message: message,
-    });
-    console.log("send email : ", sendEmail);
-    res.status(200).json({
-      status: "success",
-      message: "password reset link send to the user",
-    });
-  } catch (err) {
-    user.passwordResetToken = undefined;
-    user.passwordResetExpires = undefined;
-    user.save();
-    return next(new appError("there is an error in sending an email", 500));
-  }
-});
+    try{
+      await sendEmail({email:user.email,
+          subject:`your passwordReset valid to only 10m `,
+          message:message
+      })
+
+    }
+    catch(err){
+      user.passwordResetCode=undefined
+      user.passwordResetExpires=undefined
+      user.passwordResetVerified=undefined
+      user.save();
+      return next(new appError("there is an error on sending an email"))
+    }
+
+  
+  res.json({message:"you send an emil"})
+
+})
 const resetPassword = asyncHandler(async (req, res, next) => {
   // console.log("params=>",req.params.token);
   console.log("req.body", req.body);
