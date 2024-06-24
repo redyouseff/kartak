@@ -13,10 +13,11 @@ const stripe = require('stripe')('sk_test_51PKm4rH0IrZrduSRAqVe8SaShF2l66K82UTda
 const createOrder=asyncHandler(async(req,res,next)=>{
 
     const place =await placeModel.findOne({code:req.body.code})
+    // const user=await userModel.findById(req.)
     
     const {code,totalPrice,owner}=req.body
-    if(place && owner==place.owner){
-        const  totalPriceAfterDiscount = 200-((totalPrice * place.discount) / 100)
+    if(place.code==code && owner==place.owner){
+        const  totalPriceAfterDiscount = totalPrice-((totalPrice * place.discount) / 100)
         const cashBack=((totalPrice * place.discount) / 100)
         const order= await orderModel.create({
             user:req.currentUser._id,
@@ -32,10 +33,13 @@ const createOrder=asyncHandler(async(req,res,next)=>{
         if(!order){
             return next(new appError("the is problem on create this order",400))
         }
+      
          res.status(200).json({status:"success",data:order})
 
     }
     else {
+
+
         return next (new appError("invalid owner or code ",400))
     }
    
@@ -128,7 +132,7 @@ const totalPrice=session.amount_total / 100
 const place =await placeModel.findOne({code:code})
 const user=await userModel.findOne({email:userEmail})
 
-const  totalPriceAfterDiscount = 200-((totalPrice * place.discount) / 100)
+const  totalPriceAfterDiscount = totalPrice-((totalPrice * place.discount) / 100)
 const cashBack=((totalPrice * place.discount) / 100)
 
 
@@ -152,6 +156,60 @@ const  order= await orderModel.create({
 
 }
 
+
+const cashBackOrder=asyncHandler(async(req,res,next)=>{
+
+console.log(req.currentUser.cashBack)
+  if(req.body.totalPrice>req.currentUser.cashBack){
+    return next(new appError("the totailprice is greater than your cashBack",400))
+  }
+
+
+  const place =await placeModel.findOne({code:req.body.code})
+  
+  const {code,totalPrice,owner}=req.body
+  if(place.code==code && owner==place.owner){
+      const  totalPriceAfterDiscount = totalPrice-((totalPrice * place.discount) / 100)
+      const cashBack= req.currentUser.cashBack-req.body.totalPrice
+      const order= await orderModel.create({
+          user:req.currentUser._id,
+          place:place._id,
+          paidAt:Date.now(),
+          totalPrice:totalPrice,
+          totalPriceAfterDiscount:totalPrice,
+          owner:owner,
+          cashBack:cashBack
+          
+      })
+     
+      if(!order){
+          return next(new appError("the is problem on create this order",400))
+      }
+     
+    
+       res.status(200).json({status:"success",data:order})
+
+  }
+  else {
+
+
+      return next (new appError("invalid owner or code ",400))
+  }
+ 
+    
+
+})
+
+
+const deleteLoggedUserOrders=asyncHandler(async(req,res,next)=>{
+    const order =await orderModel.deleteMany({user:req.currentUser._id})
+  if(!order){
+    return next (new appError (`no orders for this id ${req.currentUser._id}`,400))
+  }
+  res.status(200).json({status:"success",data:order})
+
+})
+
 module.exports={
 
      createOrder,
@@ -159,6 +217,9 @@ module.exports={
      getSpecificOrder,
      getLoggedUserOrder,
      checkoutSession,
+     cashBackOrder,
+     deleteLoggedUserOrders,
+
      webhookChecout
 
 }

@@ -49,6 +49,11 @@ const userSchema=mongoose.Schema({
     passwordResetExpires:String,
     passwordResetVerified:String,
     date:Date,
+    cashBack:{
+        type:Number,
+        default:0
+
+    }
     
 
 

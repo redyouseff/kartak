@@ -54,7 +54,15 @@ const placeSchema=mongoose.Schema({
         type:String,
         required:["true","code is reqired"]
 
+    },
+    ratingQuantity:{
+        type:Number
+    },
+    rate:{
+        type:Number
     }
+
+    
  
 
 
