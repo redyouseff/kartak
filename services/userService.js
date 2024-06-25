@@ -1,12 +1,20 @@
-const { default: slugify } = require("slugify")
-const appError=require("../utils/dummy/apiError")
-const asyncHandler = require('express-async-handler')
-const {uploadSingleImage}=require("../middleware/uploadImage")
-const { v4: uuidv4 } = require('uuid');
-const { now } = require("mongoose")
-const sharp= require("sharp")
-const userModel=require("../model/userModel");
+const { default: slugify } = require("slugify");
+const appError = require("../utils/dummy/apiError");
+const asyncHandler = require("express-async-handler");
+const { uploadSingleImage } = require("../middleware/uploadImage");
+const { v4: uuidv4 } = require("uuid");
+const { now } = require("mongoose");
+const sharp = require("sharp");
+const userModel = require("../model/userModel");
 const { use } = require("../routes/userRoute");
+const jwt = require("jsonwebtoken");
+const createToken = require("../utils/dummy/jwtFunction");
+const {
+  cloudinaryUploadImage,
+  cloudinaryRemoveImage,
+} = require("../utils/dummy/cloudinary");
+const path = require("path");
+const fs = require("fs");
 
 const uploadImage=uploadSingleImage("profileImage")
 const reasizeImage=asyncHandler(async(req,res,next)=>{
@@ -31,15 +39,47 @@ const reasizeImage=asyncHandler(async(req,res,next)=>{
 
 
 })
-const createUser=asyncHandler(async(req,res,next)=>{
-    req.body.slug=slugify(req.body.name)
-    const user =await userModel.create(req.body);
-    if(!user){
-        res.status(400).json({status:"faild",message:"faild to create an user"})
+const createUser = asyncHandler(async (req, res, next) => {
+    req.body.slug = slugify(req.body.name);
+    const oldUser = await userModel.findOne({ name: req.body.name });
+  
+    if (oldUser) {
+      const error = new appError("user already exists !!", 400, "FAILED");
+      return next(error);
     }
-    res.status(200).json({status:"success",Date:user})
-
-})
+    // validation if admin uploud image
+    if (!req.file) {
+      return res.status(400).json({ message: "no file provided" });
+    }
+    //2.get the path to the image
+    const imagePath = path.join(
+      __dirname,
+      `../uploads/user/${req.body.profileImage}`
+    );
+    // console.log("image path :>> ", imagePath);
+    //3.upload ro cloudinary
+    const result = await cloudinaryUploadImage(imagePath);
+    // console.log("the result",result);
+    //create object of new place to update (url,publicId)
+    const newUser = new userModel(req.body);
+  
+    //update (url,publicId)
+    newUser.cloudImage = {
+      url: result.secure_url,
+      publicId: result.public_id,
+    };
+    const user = await userModel.create(newUser);
+    await user.save();
+    if (!user) {
+      res
+        .status(400)
+        .json({ status: "faild", message: "faild to create an user" });
+    }
+    const token = createToken(user._id);
+  
+    res.status(200).json({ status: "success", Data: user, token });
+    fs.unlinkSync(imagePath)
+  });
 const getSpecificUser=asyncHandler(async(req,res,next)=>{
     const id=req.params.id;
     const user = await userModel.findById(id)
