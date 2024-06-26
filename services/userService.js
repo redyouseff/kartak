@@ -69,12 +69,12 @@ const createUser = asyncHandler(async (req, res, next) => {
       publicId: result.public_id,
     };
     const user = await userModel.create(newUser);
-    await user.save();
     if (!user) {
-      res
+        res
         .status(400)
         .json({ status: "faild", message: "faild to create an user" });
     }
+    await user.save();
     const token = createToken(user._id);
   
     res.status(200).json({ status: "success", Data: user, token });

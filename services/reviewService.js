@@ -39,7 +39,7 @@ const deleteReview=asyncHandler(async(req,res,next)=>{
     if(!review){
         return next (new appError(`there is no is ${req.params.id}`,400))
     }
-    res.status(200).json({status:"success",data:review})
+    res.status(200).json({status:"success delete",data:review})
 })
 
 
