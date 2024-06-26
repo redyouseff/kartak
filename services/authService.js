@@ -158,9 +158,13 @@ const currentUser = asyncHandler(async (req, res, next) => {
     .select("-password -confirmPassword -active");
   console.log("user", user);
 
+  //return response with new token
+  const tokenLogin = createToken(req.currentUser._id);
+  
   res.status(201).json({
     status: "success",
-    data: { userData: user },
+    data: user,
+    token:tokenLogin
   });
 });
 module.exports={
@@ -168,7 +172,6 @@ module.exports={
     protect,
     forgetPassword,
     verifyResetCode,
-  
     updatePassword,
     currentUser,
 }

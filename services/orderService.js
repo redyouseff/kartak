@@ -219,7 +219,6 @@ module.exports={
      checkoutSession,
      cashBackOrder,
      deleteLoggedUserOrders,
-
      webhookChecout
 
 }

@@ -33,6 +33,12 @@ const userSchema=mongoose.Schema({
         minLength:[5,"too short password"]
 
     },
+    confirmPassword:{
+        type:String,
+        required:['Confirm your Password']
+        
+    
+    },
     role:{
         type:String,
         enum:["user","admin","manger"],
@@ -61,7 +67,6 @@ const userSchema=mongoose.Schema({
             publicId: null,
         }
     },
-    
 
 
 
