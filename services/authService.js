@@ -161,11 +161,7 @@ const currentUser = asyncHandler(async (req, res, next) => {
   //return response with new token
   const tokenLogin = createToken(req.currentUser._id);
   
-  res.status(201).json({
-    status: "success",
-    data: user,
-    token:tokenLogin
-  });
+  res.status(200).json({ status: "success", Data: user, token: tokenLogin });
 });
 module.exports={
     login,
