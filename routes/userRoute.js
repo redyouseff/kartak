@@ -4,7 +4,7 @@ const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 
 
-const {uploadImage,reasizeImage,createUser,getSpecificUser,getAllUser,deleteUse,updateUser, profilePhotoChange}=require("../services/userService")
+const {uploadImage,reasizeImage,createUser,getSpecificUser,getAllUser,deleteUse,updateUser, profilePhotoChange,getUserPlace}=require("../services/userService")
 
 // const {createUserValidator,getUserValidator,deleteUserValidator,updateUserValidator}=require("../utils/dummy/validator/userValidator");
 const userModel = require("../model/userModel");
@@ -49,6 +49,8 @@ const protect = asyncHandler(async (req, res, next) => {
 // module.exports=router;
 
 router.route("/").post(uploadImage, reasizeImage, createUser).get(getAllUser);
+router.route("/place").get(protect,getUserPlace)
+
 router
   .route("/:id")
   .get(getSpecificUser)
@@ -57,4 +59,8 @@ router
 router
   .route("/profilePhotoChange")
   .post(protect, uploadImage, reasizeImage, profilePhotoChange);
+ 
+
+
+
 module.exports = router;

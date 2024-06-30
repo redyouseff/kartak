@@ -9,6 +9,8 @@ const userModel = require("../model/userModel");
 const { use } = require("../routes/userRoute");
 const jwt = require("jsonwebtoken");
 const createToken = require("../utils/dummy/jwtFunction");
+const placeModel =require("../model/placeModel")
+
 const {
   cloudinaryUploadImage,
   cloudinaryRemoveImage,
@@ -168,6 +170,19 @@ const profilePhotoChange = asyncHandler(async (req, res) => {
     fs.unlinkSync(imagePath);
   });
 
+  const getUserPlace=asyncHandler(async(req,res,next)=>{
+    console.log(req.currentUser.role)
+    if(req.currentUser.role!="owner"){
+      next (new appError('user is not an owner '))
+    }
+    const place=await placeModel.find({owner:req.currentUser.name})
+    if(!place){
+      next (new appError(`this owner has no places`,400))
+    }
+    res.status(200).json({status:"success",data:place})
+
+  })
+
 module.exports={
     uploadImage,
     reasizeImage,
@@ -176,7 +191,8 @@ module.exports={
     getAllUser,
     deleteUse,
     updateUser,
-    profilePhotoChange
+    profilePhotoChange,
+    getUserPlace
     
 
 }

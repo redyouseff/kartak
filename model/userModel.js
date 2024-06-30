@@ -68,8 +68,10 @@ const userSchema=mongoose.Schema({
         }
     },
 
-
-
+    facebook:String,
+    instagram:String,
+    twitter:String
+    
 },{timestamps:true})
 userSchema.pre("save",async function(next){
  

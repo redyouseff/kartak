@@ -5,6 +5,7 @@ const appError = require("../utils/dummy/apiError");
 const asyncHandler = require("express-async-handler");
 const { models } = require("mongoose");
 const { title } = require("process");
+const { reverse } = require("dns");
 
 const createReview=asyncHandler(async(req,res,next)=>{
     
@@ -42,5 +43,13 @@ const deleteReview=asyncHandler(async(req,res,next)=>{
     res.status(200).json({status:"success delete",data:review})
 })
 
+const getPlaceReview=asyncHandler(async(req,res,next)=>{
+    const review = await reviewModel.find({place:req.params.id})
+    if(!review){
+        next (new appError(`there is on review for this id ${req.body.params}`))
+    }
+    res.status(200).json({status:"success",length:review.length,data:review })
+})
 
-module.exports={createReview,getSpecificReview,getAllReview,deleteReview}
+
+module.exports={createReview,getSpecificReview,getAllReview,deleteReview,getPlaceReview}
