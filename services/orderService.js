@@ -26,14 +26,23 @@ const createOrder=asyncHandler(async(req,res,next)=>{
             totalPrice:totalPrice,
             totalPriceAfterDiscount:totalPriceAfterDiscount,
             owner:owner,
-            cashBack:cashBack
+            cashBack:cashBack,
+
+
             
         })
        
         if(!order){
             return next(new appError("the is problem on create this order",400))
         }
+
+        const user = await userModel.findById(req.currentUser._id)
+        const cash =user.cashBack+cashBack;
       
+        const userUpdata=await userModel.findByIdAndUpdate(req.currentUser._id,{
+            cashBack:cash
+        })
+        userUpdata.save();
          res.status(200).json({status:"success",data:order})
 
     }
@@ -66,7 +75,7 @@ const getSpecificOrder=asyncHandler(async(req,res,next)=>{
 
 const getLoggedUserOrder=asyncHandler(async(req,res,next)=>{
   
-    const order =await orderModel.find({user:req.currentUser._id}).populate('place')
+    const order =await orderModel.find({user:req.currentUser._id})
     if(!order){
         return next (new appError(`there is no order for this user ${req.currentUser._id}`))
     }
@@ -135,10 +144,15 @@ const user=await userModel.findOne({email:userEmail})
 const  totalPriceAfterDiscount = totalPrice-((totalPrice * place.discount) / 100)
 const cashBack=((totalPrice * place.discount) / 100)
 
+const cash =user.cashBack +cashBack
+
+const userUpdata=await userModel.findByIdAndUpdate(user._id,{
+    cashBack:cash
+})
+userUpdata.save();
 
 
-console.log(place.discount,typeof(place.discount),place.name)
-console.log(place,user)
+
 
 const  order= await orderModel.create({
     user:user._id,
@@ -176,7 +190,7 @@ const cashBackOrder=asyncHandler(async(req,res,next)=>{
           place:place._id,
           paidAt:Date.now(),
           totalPrice:totalPrice,
-          totalPriceAfterDiscount:totalPrice,
+          totalPriceAfterDiscount:totalPriceAfterDiscount,
           owner:owner,
           cashBack:cashBack
           
@@ -185,9 +199,12 @@ const cashBackOrder=asyncHandler(async(req,res,next)=>{
       if(!order){
           return next(new appError("the is problem on create this order",400))
       }
+      const cash=req.currentUser.cashBack-totalPriceAfterDiscount
+      const userUpdata=await userModel.findByIdAndUpdate(req.currentUser._id,{
+            cashBack:cash
+      })
      
-    
-       res.status(200).json({status:"success",data:order})
+      res.status(200).json({status:"success",data:order})
 
   }
   else {
@@ -219,6 +236,9 @@ module.exports={
      checkoutSession,
      cashBackOrder,
      deleteLoggedUserOrders,
+
      webhookChecout
 
 }
+
+
