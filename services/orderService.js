@@ -75,7 +75,7 @@ const getSpecificOrder=asyncHandler(async(req,res,next)=>{
 
 const getLoggedUserOrder=asyncHandler(async(req,res,next)=>{
   
-    const order =await orderModel.find({user:req.currentUser._id})
+    const order =await orderModel.find({user:req.currentUser._id}).populate('place')
     if(!order){
         return next (new appError(`there is no order for this user ${req.currentUser._id}`))
     }
