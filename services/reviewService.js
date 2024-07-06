@@ -44,7 +44,7 @@ const deleteReview=asyncHandler(async(req,res,next)=>{
 })
 
 const getPlaceReview=asyncHandler(async(req,res,next)=>{
-    const review = await reviewModel.find({place:req.params.id})
+    const review = await reviewModel.find({place:req.params.id}).populate("user")
     if(!review){
         next (new appError(`there is on review for this id ${req.body.params}`))
     }

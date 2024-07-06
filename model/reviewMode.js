@@ -9,7 +9,7 @@ const reviewSchema=mongoose.Schema({
     },
 
     rate: {
-        type:String,
+        type:Number,
         required:[true,"rate is required"],
         min:[1,"rate must be greater than 0"],
         max:[5,"rate must be less than 5"]
