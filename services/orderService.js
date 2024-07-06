@@ -26,14 +26,23 @@ const createOrder=asyncHandler(async(req,res,next)=>{
             totalPrice:totalPrice,
             totalPriceAfterDiscount:totalPriceAfterDiscount,
             owner:owner,
-            cashBack:cashBack
+            cashBack:cashBack,
+
+
             
         })
        
         if(!order){
             return next(new appError("the is problem on create this order",400))
         }
+
+        const user = await userModel.findById(req.currentUser._id)
+        const cash =user.cashBack+cashBack;
       
+        const userUpdata=await userModel.findByIdAndUpdate(req.currentUser._id,{
+            cashBack:cash
+        })
+        userUpdata.save();
          res.status(200).json({status:"success",data:order})
 
     }
@@ -135,10 +144,15 @@ const user=await userModel.findOne({email:userEmail})
 const  totalPriceAfterDiscount = totalPrice-((totalPrice * place.discount) / 100)
 const cashBack=((totalPrice * place.discount) / 100)
 
+const cash =user.cashBack +cashBack
+
+const userUpdata=await userModel.findByIdAndUpdate(user._id,{
+    cashBack:cash
+})
+userUpdata.save();
 
 
-console.log(place.discount,typeof(place.discount),place.name)
-console.log(place,user)
+
 
 const  order= await orderModel.create({
     user:user._id,
@@ -159,7 +173,7 @@ const  order= await orderModel.create({
 
 const cashBackOrder=asyncHandler(async(req,res,next)=>{
 
-console.log(req.currentUser.cashBack)
+
   if(req.body.totalPrice>req.currentUser.cashBack){
     return next(new appError("the totailprice is greater than your cashBack",400))
   }
@@ -176,7 +190,7 @@ console.log(req.currentUser.cashBack)
           place:place._id,
           paidAt:Date.now(),
           totalPrice:totalPrice,
-          totalPriceAfterDiscount:totalPrice,
+          totalPriceAfterDiscount:totalPriceAfterDiscount,
           owner:owner,
           cashBack:cashBack
           
@@ -185,9 +199,12 @@ console.log(req.currentUser.cashBack)
       if(!order){
           return next(new appError("the is problem on create this order",400))
       }
+      const cash=req.currentUser.cashBack-totalPriceAfterDiscount
+      const userUpdata=await userModel.findByIdAndUpdate(req.currentUser._id,{
+            cashBack:cash
+      })
      
-    
-       res.status(200).json({status:"success",data:order})
+      res.status(200).json({status:"success",data:order})
 
   }
   else {
@@ -223,3 +240,5 @@ module.exports={
      webhookChecout
 
 }
+
+

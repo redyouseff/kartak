@@ -32,6 +32,7 @@ const reasizeImage=asyncHandler(async(req,res,next)=>{
 
 })
 const createUser=asyncHandler(async(req,res,next)=>{
+    
     req.body.slug=slugify(req.body.name)
     const user =await userModel.create(req.body);
     if(!user){

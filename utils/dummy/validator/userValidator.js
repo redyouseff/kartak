@@ -26,16 +26,18 @@ const createUserValidator=[
     ,
     check("passwordConfirmation").notEmpty().withMessage("passwordConfirmation is required")
     .custom((val,{req})=>{
+        
         if(val!=req.body.password){
+            
             throw new Error("passwordConfirmation not match")
         }
+       
     }),
     check("password").notEmpty().withMessage("password is required an must be exist")
     .isLength({min:4}).withMessage("to short too be an password")
     ,
     check("phone").isMobilePhone("ar-EG").withMessage("only egyption number is allowed")
 
-    
     ,validator]
   
 const getUserValidator=[

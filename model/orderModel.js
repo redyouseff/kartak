@@ -41,48 +41,37 @@ const orderSchema=mongoose.Schema({
 
 
 
-orderSchema.statics.calcRatingAverageAndRatingQuantity=async function(userId){
-    console.log("kkkk")
-    const result=await this.aggregate([
-        { $match:{user:userId}},
-        {$group:{
-            _id:"$user",
-            cashBack:{$sum:"$cashBack"}
+// orderSchema.statics.calcRatingAverageAndRatingQuantity=async function(userId){
+//     const result=await this.aggregate([
+//         { $match:{user:userId}},
+//         {$group:{
+//             _id:"$user",
+//             cashBack:{$sum:"$cashBack"}
 
             
-        }}
-    ])
+//         }}
+//     ])
     
-    console.log(result)
-    if(result.length>0){
-        await userModel.findByIdAndUpdate(userId,{
-            cashBack:result[0].cashBack,
+//     console.log(result)
+//     if(result.length>0){
+//         await userModel.findByIdAndUpdate(userId,{
+//             cashBack:result[0].cashBack,
            
             
 
 
-        })
-    }
-    // else{
-    //     await userModel.findByIdAndUpdate(userId,{
-    //         cashBack:0
-            
+//         })
+//     }
+   
+// }
+// orderSchema.post("save",async function(){
+//     await this.constructor.calcRatingAverageAndRatingQuantity(this.user)
+// })
+// ;
+// orderSchema.post("remove",async function(){
+//     await this.constructor.calcRatingAverageAndRatingQuantity(this.user)
 
-
-    //     })
-
-    // }
-
-
-}
-orderSchema.post("save",async function(){
-    await this.constructor.calcRatingAverageAndRatingQuantity(this.user)
-})
-;
-orderSchema.post("remove",async function(){
-    await this.constructor.calcRatingAverageAndRatingQuantity(this.user)
-
-})
+// })
 
 
 
